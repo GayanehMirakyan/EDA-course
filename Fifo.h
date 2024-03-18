@@ -27,7 +27,7 @@ class Fifo {
 public:
   Fifo();
 
-  void step(bool reset, bool write, bool read, data_width data_in = 0);
+//  void step(bool reset, bool write, bool read, data_width data_in = 0);
 
   bool check_empty();
 
@@ -39,9 +39,9 @@ public:
 
   data_width get_data_out() const;
 
-  void push(data_width data);
+  void push(std::array<data_width, 3> data);
 
-  data_width pop();
+  std::array<data_width, 3> pop();
 
 private:
   std::array <std::array<data_width, 3>, depth> fifo;

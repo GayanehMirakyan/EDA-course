@@ -1,4 +1,4 @@
-#include <demux.h>
+#include "demux.h"
 
 template<class data_width>
 Demux<data_width>::Demux() = default;

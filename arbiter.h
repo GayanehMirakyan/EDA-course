@@ -4,7 +4,14 @@
 #include "Fifo.h"
 
 template<class data_width>
-void runArbiter(Fifo<8, data_width> fifo) {
+class ARBITER {
+public:
+  ARBITER() : {}
+  void runArbiter();
+};
+
+template<class data_width>
+void runArbiter() {
   while (true) {
     if (!fifo.check_empty()) {
       auto fifoElem = fifo.pop();

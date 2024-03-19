@@ -4,27 +4,23 @@
 #include <array>
 #include <iostream>
 #include "Fifo.h"
-
-namespace mux{
 template<class data_width>
-void mux(Fifo<8, data_width> &fifo_a,
-         Fifo<8, data_width> &fifo_b,
-         Fifo<8, data_width> &fifo_c,
-         Fifo<8, data_width> &fifo_out,
-         int select);
+class MUX {
+public:
+  void mux(Fifo<8, data_width> &fifo_a,
+           Fifo<8, data_width> &fifo_b,
+           Fifo<8, data_width> &fifo_c,
+           Fifo<8, data_width> &fifo_out,
+           int select);
 
-template<class data_width>
-void runMux(Fifo<8, int> &fifo_select,
-            Fifo<8, data_width> &fifo_a = nullptr,
-            Fifo<8, data_width> &fifo_b = nullptr,
-            Fifo<8, data_width> &fifo_c = nullptr,
-            Fifo<8, data_width> &fifo_out = nullptr);
+  void runMux();
 
-} //mux
+};
+
 
 
 template<class data_width>
-void mux::mux(Fifo<8, data_width> &fifo_a,
+void MUX::mux(Fifo<8, data_width> &fifo_a,
               Fifo<8, data_width> &fifo_b,
               Fifo<8, data_width> &fifo_c,
               Fifo<8, data_width> &fifo_out,
@@ -39,10 +35,7 @@ void mux::mux(Fifo<8, data_width> &fifo_a,
 }
 
 template<class data_width>
-void mux::runMux(Fifo<8, int> &fifo_select, Fifo<8, data_width> &fifo_a,
-                 Fifo<8, data_width> &fifo_b,
-                 Fifo<8, data_width> &fifo_c,
-                 Fifo<8, data_width> &fifo_out) {
+void MUX::runMux() {
   while (true) {
     if (!fifo_select.check_empty()) {
       int selectData = fifo_select.pop()[DATA];

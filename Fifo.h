@@ -120,4 +120,28 @@ std::array<data_width, 3> Fifo<depth, data_width>::pop() {
   return fifo[count];
 }
 
+
+Fifo<8, int> cpu02dis0;
+Fifo<8, int> mux02cpu0;
+Fifo<8, int> dis02arb0;
+Fifo<8, int> dis02arb1;
+Fifo<8, int> dis02mux0;
+Fifo<8, int> arb02ram0;
+Fifo<8, int> arb02demux0;
+Fifo<8, int> ram02demux0;
+Fifo<8, int> demux02mux0;
+Fifo<8, int> demux02mux1;
+
+Fifo<8, int> demux12mux0;
+Fifo<8, int> demux12mux1;
+Fifo<8, int> mux12cpu1;
+Fifo<8, int> vga2demux1;
+Fifo<8, int> arb12demux1;
+Fifo<8, int> arb12vga1;
+Fifo<8, int> dis12arb1;
+Fifo<8, int> dis12mux1;
+Fifo<8, int> dis12arb0;
+Fifo<8, int> cpu12dis1;
+
+
 #endif // FIFO_H

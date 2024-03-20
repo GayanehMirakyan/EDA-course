@@ -7,49 +7,59 @@
 template<class data_width>
 class MUX {
 public:
-  void mux(Fifo<8, data_width> &fifo_a,
-           Fifo<8, data_width> &fifo_b,
-           Fifo<8, data_width> &fifo_c,
-           Fifo<8, data_width> &fifo_out,
-           int select);
+  MUX(Fifo<8, data_width> *mux2cpu,
+      Fifo<8, data_width> *demux02mux,
+      Fifo<8, data_width> *demux12mux,
+      Fifo<8, data_width> *dis2mux)
+      : mux2cpu(mux2cpu), demux02mux(demux02mux), demux12mux(demux12mux), dis2mux(dis2mux) {}
+
+  Fifo<8, data_width> *mux2cpu;
+  Fifo<8, data_width> *demux02mux;
+  Fifo<8, data_width> *demux12mux;
+  Fifo<8, data_width> *dis2mux;
 
   void runMux();
 
 };
 
-
-
-template<class data_width>
-void MUX::mux(Fifo<8, data_width> &fifo_a,
-              Fifo<8, data_width> &fifo_b,
-              Fifo<8, data_width> &fifo_c,
-              Fifo<8, data_width> &fifo_out,
-              int select) {
-  switch (select) {
-  case 0:fifo_out.push(fifo_a.pop());
-  case 1:fifo_out.push(fifo_b.pop());
-  case 2:fifo_out.push(fifo_c.pop());
-
-  default:std::cout << "wrong select value\n";
-  }
-}
+/// mux02cpu0, demux02mux0, demux12mux0, dis02mux0
 
 template<class data_width>
-void MUX::runMux() {
-  while (true) {
-    if (!fifo_select.check_empty()) {
-      int selectData = fifo_select.pop()[DATA];
-      if (selectData == 0 && !fifo_a.check_empty()) {
-        mux(fifo_a, fifo_b, fifo_c, fifo_out, selectData);
-        break;
-      } else if (selectData == 1 && !fifo_b.check_empty()) {
-        mux(fifo_a, fifo_b, fifo_c, fifo_out, selectData);
-        break;
-      } else if (selectData == 2 && !fifo_c.check_empty()) {
-        mux(fifo_a, fifo_b, fifo_c, fifo_out, selectData);
-        break;
-      }
+void MUX<data_width>::runMux() {
+
+  if (!dis2mux->check_empty()) {
+    data_width Data = dis2mux->pop();
+    data_width Address = dis2mux->pop();
+    data_width Mode = dis2mux->pop();
+
+    switch (Data) {
+    case 0: {
+      if (demux02mux->check_empty())
+        return;
+      data_width Data_mux0 = demux02mux->pop();
+      data_width Address_mux0 = demux02mux->pop();
+      data_width Mode_mux0 = demux02mux->pop();
+
+      mux2cpu->push(Mode_mux0);
+      mux2cpu->push(Address_mux0);
+      mux2cpu->push(Data_mux0);
+      break;
     }
+    case 1: {
+      if (demux12mux->check_empty())
+        return;
+      data_width Data_mux1 = demux12mux->pop();
+      data_width Address_mux1 = demux12mux->pop();
+      data_width Mode_mux1 = demux12mux->pop();
+
+      mux2cpu->push(Mode_mux1);
+      mux2cpu->push(Address_mux1);
+      mux2cpu->push(Data_mux1);
+      break;
+    }
+    default:std::cout << "wrong selected value\n";
+    }
+
   }
 }
 

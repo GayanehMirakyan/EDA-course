@@ -39,12 +39,12 @@ public:
 
   data_width get_data_out() const;
 
-  void push(std::array<data_width, 3> data);
+  void push(data_width data);
 
-  std::array<data_width, 3> pop();
+  data_width pop();
 
 private:
-  std::array <std::array<data_width, 3>, depth> fifo;
+  std::array <data_width, depth*3> fifo;
   int write_ptr;
   int read_ptr;
   bool full;
@@ -92,32 +92,29 @@ data_width Fifo<depth, data_width>::get_data_out() const {
 }
 
 template<int depth, class data_width>
-void Fifo<depth, data_width>::push(std::array<data_width, 3> data) {
-  // FIXME: make push with mode, data and address
+void Fifo<depth, data_width>::push(data_width data) {
   if (count >= 8) {
     std::cout << "---Cannot push: Buffer Full---" << std::endl;
   } else {
-    fifo[count][DATA] = data[DATA];
-    fifo[count][MODE] = data[MODE];
-    fifo[count][ADDRESS] = data[ADDRESS];
+    fifo[count] = data;
 
     count++;
-    std::cout << "Pushed " << data[DATA] << std::endl;
+    std::cout << "Pushed " << data << std::endl;
   }
 }
 
 template<int depth, class data_width>
-std::array<data_width, 3> Fifo<depth, data_width>::pop() {
-  std::array<int, 3> defArr = {-1, -1, -1};
+data_width Fifo<depth, data_width>::pop() {
+  data_width defArr = -1;
   if (fifo.empty()) {
     std::cout << "---Cannot Pop: Buffer Empty---" << std::endl;
     return defArr;
   }
   /// [mode, address, data]
-  data_width data = fifo[count - 1][DATA];
+  data_width data = fifo[count - 1];
   count--;
   std::cout << "-------------------------------Poped " << data << std::endl;
-  return fifo[count];
+  return fifo[count*DATA];
 }
 
 

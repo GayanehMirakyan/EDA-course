@@ -22,19 +22,22 @@ public:
 
 template<class data_width>
 void DEMUX<data_width>::runDemux() {
+
   if (arb2demux->check_empty())
     return;
-  data_width Data_demux = arb2demux->pop();
-  data_width Address_demux = arb2demux->pop();
+
   data_width Mode_demux = arb2demux->pop();
+  data_width Address_demux = arb2demux->pop();
+  data_width Data_demux = arb2demux->pop();
+
   switch (Data_demux) {
   case 0: {
     if (ram2demux->check_empty())
       return;
 
-    data_width Data_demux0 = ram2demux->pop();
-    data_width Address_demux0 = ram2demux->pop();
     data_width Mode_demux0 = ram2demux->pop();
+    data_width Address_demux0 = ram2demux->pop();
+    data_width Data_demux0 = ram2demux->pop();
 
     demux2mux0->push(Mode_demux0);
     demux2mux0->push(Address_demux0);
@@ -45,9 +48,9 @@ void DEMUX<data_width>::runDemux() {
     if (ram2demux->check_empty())
       return;
 
-    data_width Data_demux1 = ram2demux->pop();
-    data_width Address_demux1 = ram2demux->pop();
     data_width Mode_demux1 = ram2demux->pop();
+    data_width Address_demux1 = ram2demux->pop();
+    data_width Data_demux1 = ram2demux->pop();
 
     demux2mux1->push(Mode_demux1);
     demux2mux1->push(Address_demux1);

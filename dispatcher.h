@@ -26,16 +26,15 @@ public:
 template<class data_width>
 void DISPATCHER<data_width>::runDispatcher() {
   if (!cpu2dis->check_empty()) {
-    data_width Data = cpu2dis->pop();
-    data_width Address = cpu2dis->pop();
     data_width Mode = cpu2dis->pop();
-
+    data_width Address = cpu2dis->pop();
+    data_width Data = cpu2dis->pop();
 
     if (Mode == WRITE) {
       /// CHOOSE ARBITER ACCORDING TO THE ADDRESS
       /// call arbiter0 or arbiter1
       /// depends on address range
-      if (Address <= address::CPU_MAX) {
+      if (Address <= address::RAM_MAX) {
         dis2arb0->push(Mode);
         dis2arb0->push(Address);
         dis2arb0->push(Data);
@@ -49,6 +48,16 @@ void DISPATCHER<data_width>::runDispatcher() {
 
     } else {
       /// mode is read
+      /// sent to mux selecter (no. of demux)
+      if (Address <= address::RAM_MAX) {
+        dis2mux->push(mode::WRITE); // mode ?? 
+        dis2mux->push(Address); // adress ??
+        dis2mux->push(0); // data -- demux0
+      } else {        
+        dis2mux->push(mode::WRITE); // mode ?? 
+        dis2mux->push(Address); // adress ??
+        dis2mux->push(1); // data -- demux0
+      }
     }
   }
 }

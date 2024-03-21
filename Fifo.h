@@ -16,8 +16,8 @@ enum mode {
 };
 
 enum address {
-  CPU_MIN = 0,
-  CPU_MAX = 25,
+  RAM_MIN = 0,
+  RAM_MAX = 25,
   VGA_MIN = 26,
   VGA_MAX = 50
 };

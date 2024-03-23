@@ -15,7 +15,7 @@ enum mode {
   WRITE
 };
 
-enum address {
+enum address { // TODO ram and vga are different classes
   RAM_MIN = 0,
   RAM_MAX = 25,
   VGA_MIN = 26,
@@ -114,7 +114,7 @@ data_width Fifo<depth, data_width>::pop() {
   data_width data = fifo[count - 1];
   count--;
   std::cout << "-------------------------------Poped " << data << std::endl;
-  return fifo[count*DATA];
+  return data;
 }
 
 

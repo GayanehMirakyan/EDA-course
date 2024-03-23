@@ -23,36 +23,36 @@ template<class data_width>
 void ARBITER<data_width>::runArbiter() {
   if (!dis02arb->check_empty()) {
 
-    data_width Mode = dis02arb->pop();
-    data_width Address = dis02arb->pop();
     data_width Data = dis02arb->pop();
+    data_width Address = dis02arb->pop();
+    data_width Mode = dis02arb->pop();
 
     if (Mode == WRITE) {
       /// send data to ram
-      arb2ram->push(Mode);
-      arb2ram->push(Address);
       arb2ram->push(Data);
+      arb2ram->push(Address);
+      arb2ram->push(Mode);
     } else if (Mode == READ) {
-      arb2demux->push(mode::WRITE); // ?
+      arb2demux->push(0); // ?
       arb2demux->push(Address); // ?
-      arb2demux->push(0); // no. of cpu
+      arb2demux->push(mode::WRITE); // no. of cpu
     }
   } // else if or if???
   if (!dis12arb->check_empty()) {
 
-    data_width Mode = dis12arb->pop();
-    data_width Address = dis12arb->pop();
     data_width Data = dis12arb->pop();
+    data_width Address = dis12arb->pop();
+    data_width Mode = dis12arb->pop();
 
     if (Mode == WRITE) {
       /// send data to ram
-      arb2ram->push(Mode);
-      arb2ram->push(Address);
       arb2ram->push(Data);
+      arb2ram->push(Address);
+      arb2ram->push(Mode);
     } else if (Mode == READ) {
-      arb2demux->push(mode::WRITE); // ?
+      arb2demux->push(1); // ?
       arb2demux->push(Address); // ?
-      arb2demux->push(1); // no. of cpu
+      arb2demux->push(mode::WRITE); // no. of cpu
     }
   }
 }

@@ -2,6 +2,8 @@
 #include "dispatcher.h"
 #include "arbiter.h"
 #include "demux.h"
+#include "cpu.h"
+#include "ram.h"
 #include <vector>
 #include <functional>
 #include <fstream>
@@ -16,7 +18,7 @@ void cpuLoad(std::string fileName) {
   }
   std::string line;
   while (std::getline(file, line)) {
-    // push line to code segment
+    // push line to code segment via cpu load instruction
   }
 
   file.close();
@@ -51,6 +53,9 @@ void BusRunner() {
 }
 
 int main() {
+  RAM ram(&arb02ram0, &ram02demux0); // FIXME : arb02ram0 --> arb02ram
+  ram.print_memory();
+  CPU cpu(&cpu02dis0, &mux02cpu0);
   BusRunner();
   return 0;
 }

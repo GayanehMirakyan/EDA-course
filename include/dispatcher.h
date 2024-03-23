@@ -29,34 +29,35 @@ void DISPATCHER<data_width>::runDispatcher() {
     data_width Mode = cpu2dis->pop();
     data_width Address = cpu2dis->pop();
     data_width Data = cpu2dis->pop();
+    std::cerr << Mode << " " << Address << " "<< Data << "\n";
 
     if (Mode == WRITE) {
       /// CHOOSE ARBITER ACCORDING TO THE ADDRESS
       /// call arbiter0 or arbiter1
       /// depends on address range
       if (Address <= address::RAM_MAX) {
-        dis2arb0->push(Mode);
-        dis2arb0->push(Address);
         dis2arb0->push(Data);
+        dis2arb0->push(Address);
+        dis2arb0->push(Mode);
 
       } else {
         /// here is vga
-        dis2arb1->push(Mode);
-        dis2arb1->push(Address);
         dis2arb1->push(Data);
+        dis2arb1->push(Address);
+        dis2arb1->push(Mode);
       }
 
     } else {
       /// mode is read
       /// sent to mux selecter (no. of demux)
       if (Address <= address::RAM_MAX) {
-        dis2mux->push(mode::WRITE); // mode ?? 
-        dis2mux->push(Address); // adress ??
         dis2mux->push(0); // data -- demux0
-      } else {        
-        dis2mux->push(mode::WRITE); // mode ?? 
         dis2mux->push(Address); // adress ??
-        dis2mux->push(1); // data -- demux0
+        dis2mux->push(mode::WRITE); // mode ??
+      } else {        
+        dis2mux->push(1); // data -- demux1
+        dis2mux->push(Address); // adress ??
+        dis2mux->push(mode::WRITE); // mode ??
       }
     }
   }

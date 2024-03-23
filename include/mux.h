@@ -39,10 +39,12 @@ void MUX<data_width>::runMux() {
       data_width Data_mux0 = demux02mux->pop();
       data_width Address_mux0 = demux02mux->pop();
       data_width Mode_mux0 = demux02mux->pop();
+      std::cerr << Mode_mux0 << " " << Address_mux0 << " "<< Data_mux0 << "\n";
 
-      mux2cpu->push(Mode_mux0);
-      mux2cpu->push(Address_mux0);
+
       mux2cpu->push(Data_mux0);
+      mux2cpu->push(Address_mux0);
+      mux2cpu->push(Mode_mux0);
       break;
     }
     case 1: {
@@ -52,9 +54,10 @@ void MUX<data_width>::runMux() {
       data_width Address_mux1 = demux12mux->pop();
       data_width Mode_mux1 = demux12mux->pop();
 
-      mux2cpu->push(Mode_mux1);
-      mux2cpu->push(Address_mux1);
+      std::cerr << Mode_mux1 << " " << Address_mux1 << " "<< Data_mux1 << "\n";
       mux2cpu->push(Data_mux1);
+      mux2cpu->push(Address_mux1);
+      mux2cpu->push(Mode_mux1);
       break;
     }
     default:std::cout << "wrong selected value\n";

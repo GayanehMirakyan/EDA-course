@@ -26,38 +26,38 @@ public:
 template<class data_width>
 void DISPATCHER<data_width>::runDispatcher() {
   if (!cpu2dis->check_empty()) {
-    data_width Mode = cpu2dis->pop();
-    data_width Address = cpu2dis->pop();
-    data_width Data = cpu2dis->pop();
-    std::cerr << Mode << " " << Address << " "<< Data << "\n";
+    std::cout << "in DISPATCHER: cpu to dis fifo is not empty\n";
+    auto from_fifo = cpu2dis->pop_all();;
+    data_width Mode = from_fifo[MODE];
+    data_width Address = from_fifo[ADDRESS];
+    data_width Data = from_fifo[DATA];
+    std::cerr << "Mode = " << Mode << "   Address = " << Address << "   Data = " << Data << "\n";
 
     if (Mode == WRITE) {
       /// CHOOSE ARBITER ACCORDING TO THE ADDRESS
       /// call arbiter0 or arbiter1
       /// depends on address range
       if (Address <= address::RAM_MAX) {
-        dis2arb0->push(Data);
-        dis2arb0->push(Address);
-        dis2arb0->push(Mode);
+        std::cout << "WRITE\n";
+        dis2arb0->push_all(Mode, Address, Data);
 
       } else {
         /// here is vga
-        dis2arb1->push(Data);
-        dis2arb1->push(Address);
-        dis2arb1->push(Mode);
+        dis2arb1->push_all(Mode, Address, Data);
       }
 
     } else {
-      /// mode is read
+      /// mode is READ
       /// sent to mux selecter (no. of demux)
       if (Address <= address::RAM_MAX) {
-        dis2mux->push(0); // data -- demux0
-        dis2mux->push(Address); // adress ??
-        dis2mux->push(mode::WRITE); // mode ??
-      } else {        
-        dis2mux->push(1); // data -- demux1
-        dis2mux->push(Address); // adress ??
-        dis2mux->push(mode::WRITE); // mode ??
+        std::cout << "READ\n";
+        dis2mux->push_all(Mode, Address, 0);
+        dis2arb0->push_all(Mode, Address, Data);
+      } else {
+        std::cout << " VGA \n";
+        dis2mux->push_all(Mode, Address, 1);
+        dis2arb1->push_all(Mode, Address, Data);
+
       }
     }
   }

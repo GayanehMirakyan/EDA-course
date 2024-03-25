@@ -9,7 +9,8 @@ public:
   ARBITER(Fifo<8, int> *dis02arb,
           Fifo<8, int> *dis12arb,
           Fifo<8, int> *arb2demux,
-          Fifo<8, int> *arb2ram) : dis02arb(dis02arb), dis12arb(dis12arb), arb2demux(arb2demux), arb2ram(arb2ram) {}
+          Fifo<8, int> *arb2ram
+          ) : dis02arb(dis02arb), dis12arb(dis12arb), arb2demux(arb2demux), arb2ram(arb2ram) {}
 
   Fifo<8, int> *dis02arb;
   Fifo<8, int> *dis12arb;
@@ -21,38 +22,47 @@ public:
 
 template<class data_width>
 void ARBITER<data_width>::runArbiter() {
+//  std::cout << "arb2ram in arb before: " << arb2ram << "\n"; // arden chpacaca
   if (!dis02arb->check_empty()) {
+    std::cout << " ARBITER \n";
 
-    data_width Data = dis02arb->pop();
-    data_width Address = dis02arb->pop();
-    data_width Mode = dis02arb->pop();
+    std::cout << "get data from dispatcher0\n";
+    auto from_fifo = dis02arb->pop_all();;
+    data_width Mode = from_fifo[MODE];
+    data_width Address = from_fifo[ADDRESS];
+    data_width Data = from_fifo[DATA];
 
     if (Mode == WRITE) {
       /// send data to ram
-      arb2ram->push(Data);
-      arb2ram->push(Address);
-      arb2ram->push(Mode);
+      std::cout << "WRITE to Ram\n";
+      std::cerr << "Mode = " << Mode << "   Address = " << Address << "   Data = " << Data << "\n";
+
+      arb2ram->push_all(Mode, Address, Data);
     } else if (Mode == READ) {
-      arb2demux->push(0); // ?
-      arb2demux->push(Address); // ?
-      arb2demux->push(mode::WRITE); // no. of cpu
+      /// read
+      std::cout << "READ from Ram\n";
+      arb2demux->push_all(Mode, Address, Data);
+      arb02ram0.push_all(Mode, Address, Data);
+
     }
   } // else if or if???
-  if (!dis12arb->check_empty()) {
+  else if (!dis12arb->check_empty()) {
+    std::cout << " ARBITER \n";
 
-    data_width Data = dis12arb->pop();
-    data_width Address = dis12arb->pop();
-    data_width Mode = dis12arb->pop();
+    std::cout << "get data from dispatcher1\n";
+    auto from_fifo = dis12arb->pop_all();;
+    data_width Mode = from_fifo[MODE];
+    data_width Address = from_fifo[ADDRESS];
+    data_width Data = from_fifo[DATA];
 
     if (Mode == WRITE) {
       /// send data to ram
-      arb2ram->push(Data);
-      arb2ram->push(Address);
-      arb2ram->push(Mode);
+      std::cout << "WRITE to Ram\n";
+      arb2ram->push_all(Mode, Address, Data);
+
+
     } else if (Mode == READ) {
-      arb2demux->push(1); // ?
-      arb2demux->push(Address); // ?
-      arb2demux->push(mode::WRITE); // no. of cpu
+      arb2demux->push_all(Mode, Address, Data);
     }
   }
 }

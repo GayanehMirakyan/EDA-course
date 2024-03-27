@@ -3,10 +3,10 @@
 #include <array>
 #include "Fifo.h"
 #include "ram.h"
+#include "bus.h"
 
 enum Instructions {
   PUSH,
-  POP,
   ADD,
   DIV
 };
@@ -52,13 +52,20 @@ int CPU::pop() {
   code_pointer++;
   stack_pointer--;
   cpu2dis->push_all(READ, stack_pointer, 0);
-//  return
+  bus.runSendToCpu();
+  if(mux2cpu->check_empty())
+      return INT32_MIN;
+  auto getData = mux2cpu->pop_all();
+
+  return  getData[DATA];
 }
 
 void CPU::add() {
+  int temp1 = pop();
+  int temp2 = pop();
 
-//  int a = pop();
-
+  std::cout << temp1 << "     " << temp2 << "\n";
+    push(temp1+temp2);
 }
 
 void CPU::runCpu() {
@@ -89,11 +96,8 @@ void CPU::runCpu() {
         cpu2dis->push_all(READ, code_pointer, Data);
 
         break;
-      case POP: std::cout << "pop\n";
-      prev_pop = true;
-        pop();
-        break;
       case ADD: std::cout << "add\n";
+        add();
         break;
       }
       //      std::cerr << "runCpu write \n" << Data << "\n";
@@ -103,7 +107,7 @@ void CPU::runCpu() {
 //
 //    }
 
-    } else if(all_fifo_empty()) {
+    } else{
 //      code_pointer++;
       cpu2dis->push_all(READ, code_pointer, 0);
     }

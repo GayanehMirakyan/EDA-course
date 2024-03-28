@@ -22,7 +22,7 @@ public:
       ) : arb2ram(arb2ram),
       ram2demux(ram2demux) {
     for (int i = 0; i < RAM_SIZE; i++) {
-      memory[i] = 0;
+      memory[i] = -1;
     }
     memory[0] = 0;
     memory[1] = 10;
@@ -55,13 +55,14 @@ void RAM::runRam() {
     int Address = from_fifo[ADDRESS];
     int Data = from_fifo[DATA];
     std::cout << " arb to ram fifo \n";
+    std::cerr << "Mode = " << Mode << "   Address = " << Address << "   Data = " << Data << "\n";
 
     if (Mode == READ) {
       /// ram to demux
 //      std::cout << memory[Address] << "\n" << ram2demux->check_empty() << "\n";
-      ram2demux->push_all(Mode, Address, memory[Address]);
       if (Address < STACK_SEGMENT_MAX && Address > STACK_SEGMENT_MIN) {
-        memory[Address] = 0;
+        ram2demux->push_all(Mode, Address, memory[Address]);
+        memory[Address] = -1;
       }
       std::cout << "after push to ram2demux\n";
     } else{

@@ -40,12 +40,12 @@ void ARBITER<data_width>::runArbiter() {
       arb2ram->push_all(Mode, Address, Data);
     } else if (Mode == READ) {
       /// read
-      std::cout << "READ from Ram\n";
-      arb2demux->push_all(Mode, Address, Data);
+      std::cout << "need to READ from Ram\n";
+      arb2demux->push_all(Mode, Address, 0);
       arb02ram0.push_all(Mode, Address, Data);
 
     }
-  } // else if or if???
+  }
   else if (!dis12arb->check_empty()) {
     std::cout << " ARBITER \n";
 
@@ -62,7 +62,9 @@ void ARBITER<data_width>::runArbiter() {
 
 
     } else if (Mode == READ) {
-      arb2demux->push_all(Mode, Address, Data);
+      arb2demux->push_all(Mode, Address, 0);
+      arb02ram0.push_all(Mode, Address, Data);
+
     }
   }
 }

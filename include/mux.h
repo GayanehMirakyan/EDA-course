@@ -45,8 +45,7 @@ void MUX<data_width>::runMux() {
       data_width Mode_mux0 = from_fifo_1[MODE];
       data_width Address_mux0 = from_fifo_1[ADDRESS];
       data_width Data_mux0 = from_fifo_1[DATA];
-      std::cerr << Mode_mux0 << " " << Address_mux0 << " "<< Data_mux0 << "\n";
-
+      std::cerr << "Mode_mux0 = " << Mode_mux0 << "   Address_mux0 = " << Address_mux0 << "   Data_mux0 = " << Data_mux0 << "\n";
       mux2cpu->push_all(Mode_mux0, Address_mux0, Data_mux0);
 
       break;

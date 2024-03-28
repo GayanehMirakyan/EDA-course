@@ -58,25 +58,6 @@ public:
 template<int depth, class data_width>
 Fifo<depth, data_width>::Fifo() : write_ptr(0), read_ptr(0), full(false), empty(true), count(0) {}
 
-//template<int depth, class data_width>
-//void Fifo<depth, data_width>::step(bool reset, bool write, bool read, data_width data_in) {
-//  if (reset) {
-//    write_ptr = 0;
-//    read_ptr = 0;
-//    data_out = 0;
-//    full = false;
-//    empty = true;
-//  } else {
-//    empty = check_empty();
-//    full = check_full();
-//    if (write && !full) {
-//      push(data_in);
-//    } else if (read && !empty) {
-//      pop();
-//    }
-//  }
-//}
-
 template<int depth, class data_width>
 bool Fifo<depth, data_width>::check_empty() {
   return count == 0;

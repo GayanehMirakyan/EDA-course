@@ -10,20 +10,19 @@
 #include <functional>
 #include <fstream>
 
-// FIXME: Need to add CPU, RAM
 
 void cpuLoad(std::string fileName) {
-    std::ifstream file(fileName);
-    if (!file) {
-        std::cerr << "cpuLoad error\n";
-        return;
-    }
-    std::string line;
-    while (std::getline(file, line)) {
-        // push line to code segment via cpu load instruction
-    }
+  std::ifstream file(fileName);
+  if (!file) {
+    std::cerr << "cpuLoad error\n";
+    return;
+  }
+  std::string line;
+  while (std::getline(file, line)) {
+    // push line to code segment via cpu load instruction
+  }
 
-    file.close();
+  file.close();
 }
 
 CPU cpu(&cpu02dis0, &mux02cpu0);
@@ -33,22 +32,21 @@ int main() {
 //  ram.print_memory();
 
 
-    std::vector<std::function<void()>> tasks =
-            {[&] { cpu.runCpu(); }, [&] { ram.runRam(); },
-             [&] { bus.runSendToRam(); }, [&] { bus.runSendToCpu(); }};
-    int i = 0;
-    while (true) {
-        for (auto &task: tasks) {
+  std::vector<std::function<void()>> tasks =
+          {[&] { cpu.runCpu(); },
+           [&] { bus.runSendToRam(); }, [&] { ram.runRam(); }, [&] { bus.runSendToCpu(); }};
+  int i = 0;
+  while (true) {
+    for (auto &task: tasks) {
 
-//      std::cout << "arb2ram in whl before: " << arb0.arb2ram << "\n"; // arden chpacaca
-            task();
-        }
-        i++;
-        if (i > 100) {
-            break;
-        }
-
+      task();
     }
-    ram.print_memory();
-    return 0;
+    i++;
+    if (i > 100) {
+      break;
+    }
+
+  }
+  ram.print_memory();
+  return 0;
 }

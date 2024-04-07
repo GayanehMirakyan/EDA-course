@@ -26,7 +26,6 @@ void cpuLoad(std::string fileName) {
 }
 
 CPU cpu(&cpu02dis0, &mux02cpu0);
-RAM ram(&arb02ram0, &ram02demux0); // FIXME : arb02ram0 --> arb02ram
 
 int main() {
 //  ram.print_memory();
@@ -37,10 +36,16 @@ int main() {
            [&] { bus.runSendToRam(); }, [&] { ram.runRam(); }, [&] { bus.runSendToCpu(); }};
   int i = 0;
   while (true) {
-    for (auto &task: tasks) {
+//    for (auto &task: tasks) {
+//
+//      task();
+//    }
 
-      task();
-    }
+    cpu.runCpu();
+    bus.runSendToRam();
+    ram.runRam();
+    bus.runSendToCpu();
+
     i++;
     if (i > 100) {
       break;

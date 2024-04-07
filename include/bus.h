@@ -1,7 +1,3 @@
-//
-// Created by gayane on 3/26/24.
-//
-
 #ifndef BUS_H
 #define BUS_H
 

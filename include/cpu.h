@@ -7,22 +7,22 @@
 #include "bus.h"
 
 enum Instructions {
-    PUSH,
-    ADD,
-    DIV,
-    MUL,
-    INV,
-    LOAD,
-    STORE,
-    SAVEPC,
-    JMP,
-    CJMP,
-    GREAT,
-    DUP,
-    OVER,
-    SWAP,
-    HALT,
-    PRINT
+  PUSH,
+  ADD,
+  DIV,
+  MUL,
+  INV,
+  LOAD,
+  STORE,
+  SAVEPC,
+  JMP,
+  CJMP,
+  GREAT,
+  DUP,
+  OVER,
+  SWAP,
+  HALT,
+  PRINT
 };
 
 class CPU {
@@ -62,19 +62,19 @@ void CPU::startCPU(int address) {
 void CPU::push(int Data) {
   std::cout << "is PUSH inst\n";
   cpu2dis->push_all(WRITE, stack_pointer, Data);
+  bus.runSendToRam();
   stack_pointer++;
-  code_pointer++;
-//  bus.runSendToCpu();
+//  code_pointer++;
 }
 
 int CPU::pop() {
   if (stack_pointer == 0)
     return -1;
-
-  code_pointer++;
   stack_pointer--;
   cpu2dis->push_all(READ, stack_pointer, 0);
-  bus.runSendToCpu();
+
+  bus.runSendToRam();
+  ram.runRam();
   if (mux2cpu->check_empty())
     return INT32_MIN;
   auto getData = mux2cpu->pop_all();
@@ -106,19 +106,17 @@ void CPU::runCpu() {
         prev_push = false;
         return;
       }
-      switch (Data) {
-        case PUSH:
-          std::cout << "push\n";
-          prev_push = true;
-          Address++;
-          code_pointer = Address;
-//          cpu2dis->push_all(READ, code_pointer, Data);
 
-          break;
-        case ADD:
-          std::cout << "add\n";
-          add();
-          break;
+      switch (Data) {
+      case PUSH:std::cout << "push\n";
+        prev_push = true;
+        code_pointer = Address;
+//          cpu2dis->push_all(READ, code_pointer, Data);
+        startCPU(code_pointer);
+        break;
+      case ADD:std::cout << "add\n";
+        add();
+        break;
       }
       //      std::cerr << "runCpu write \n" << Data << "\n";
 //    }
@@ -126,10 +124,11 @@ void CPU::runCpu() {
 //      std::cerr << "runCpu read \n";
 //
 //    }
+      code_pointer++;
 
     } else {
       startCPU(code_pointer);
-      code_pointer++;
+//      code_pointer++;
 
 //      cpu2dis->push_all(READ, code_pointer, 0);
     }

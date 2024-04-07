@@ -60,9 +60,12 @@ void RAM::runRam() {
     if (Mode == READ) {
       /// ram to demux
 //      std::cout << memory[Address] << "\n" << ram2demux->check_empty() << "\n";
-      if (Address < STACK_SEGMENT_MAX && Address > STACK_SEGMENT_MIN) {
+      if (Address <= STACK_SEGMENT_MAX && Address >= STACK_SEGMENT_MIN) {
         ram2demux->push_all(Mode, Address, memory[Address]);
         memory[Address] = -1;
+      }
+      else if(Address <= CODE_SEGMENT_MAX && Address >= CODE_SEGMENT_MIN) {
+        ram2demux->push_all(Mode, Address, memory[Address]);
       }
       std::cout << "after push to ram2demux\n";
     } else{
@@ -73,5 +76,7 @@ void RAM::runRam() {
     }
   }
 }
+
+RAM ram(&arb02ram0, &ram02demux0); // FIXME : arb02ram0 --> arb02ram
 
 #endif //RAM_H

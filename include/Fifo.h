@@ -4,6 +4,25 @@
 #include <array>
 #include <iostream>
 
+enum Instructions {
+    PUSH,
+    ADD,
+    DIV,
+    MUL,
+    INV,
+    LOAD,
+    STORE,
+    SAVEPC,
+    JMP,
+    CJMP,
+    GREAT,
+    DUP,
+    OVER,
+    SWAP,
+    HALT,
+    PRINT
+};
+
 enum {
   MODE,
   ADDRESS,
@@ -130,34 +149,5 @@ Fifo<8, int> dis12arb1;
 Fifo<8, int> dis12mux1;
 Fifo<8, int> dis12arb0;
 Fifo<8, int> cpu12dis1;
-
-//bool all_fifo_empty() {
-//  return cpu02dis0.check_empty() && mux02cpu0.check_empty() && dis02arb0.check_empty() && dis02arb1.check_empty()
-//      && dis02mux0.check_empty() && arb02ram0.check_empty() && arb02demux0.check_empty() && ram02demux0.check_empty()
-//      && demux02mux0.check_empty() && demux02mux1.check_empty();
-//}
-
-//extern Fifo<8, int> cpu02dis0;
-//extern Fifo<8, int> mux02cpu0;
-//extern Fifo<8, int> dis02arb0;
-//extern Fifo<8, int> dis02arb1;
-//extern Fifo<8, int> dis02mux0;
-//extern Fifo<8, int> arb02ram0;
-//extern Fifo<8, int> arb02demux0;
-//extern Fifo<8, int> ram02demux0;
-//extern Fifo<8, int> demux02mux0;
-//extern Fifo<8, int> demux02mux1;
-//
-//extern Fifo<8, int> demux12mux0;
-//extern Fifo<8, int> demux12mux1;
-//extern Fifo<8, int> mux12cpu1;
-//extern Fifo<8, int> vga2demux1;
-//extern Fifo<8, int> arb12demux1;
-//extern Fifo<8, int> arb12vga1;
-//extern Fifo<8, int> dis12arb1;
-//extern Fifo<8, int> dis12mux1;
-//extern Fifo<8, int> dis12arb0;
-//extern Fifo<8, int> cpu12dis1;
-
 
 #endif // FIFO_H

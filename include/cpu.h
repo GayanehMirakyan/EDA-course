@@ -6,24 +6,6 @@
 #include "ram.h"
 #include "bus.h"
 
-enum Instructions {
-  PUSH,
-  ADD,
-  DIV,
-  MUL,
-  INV,
-  LOAD,
-  STORE,
-  SAVEPC,
-  JMP,
-  CJMP,
-  GREAT,
-  DUP,
-  OVER,
-  SWAP,
-  HALT,
-  PRINT
-};
 
 class CPU {
 public:
@@ -41,11 +23,40 @@ public:
 
   void runCpu();
 
-  void push(int Data);
-
   int pop();
 
+  void push(int Data);
+
   void add();
+
+  void div();
+
+  void store();
+
+  void swap();
+
+  int load();
+
+  void savepc();
+
+  void jmp();
+
+  void cjmp();
+
+  void inv();
+
+  void mul();
+
+  void grd();
+
+  void dup();
+
+  void over();
+
+  void halt();
+
+  void print();
+
 
   void startCPU(int address);
 
@@ -62,7 +73,7 @@ void CPU::startCPU(int address) {
 void CPU::push(int Data) {
   std::cout << "is PUSH inst\n";
   cpu2dis->push_all(WRITE, stack_pointer, Data);
-  bus.runSendToRam();
+//  bus.runSendToRam();
   stack_pointer++;
 //  code_pointer++;
 }
@@ -75,6 +86,7 @@ int CPU::pop() {
 
   bus.runSendToRam();
   ram.runRam();
+  bus.runSendToCpu();
   if (mux2cpu->check_empty())
     return INT32_MIN;
   auto getData = mux2cpu->pop_all();
@@ -90,6 +102,97 @@ void CPU::add() {
   push(temp1 + temp2);
 }
 
+void CPU::store() {
+  /// idk
+  int temp = pop();
+  push(temp);
+  cpu2dis->push_all(WRITE, data_pointer, temp);
+  data_pointer++;
+  bus.runSendToRam();
+  ram.runRam();
+}
+
+int CPU::load() {
+  int temp_addr = pop();
+  cpu2dis->push_all(READ, temp_addr, 0);
+
+  bus.runSendToRam();
+  ram.runRam();
+  bus.runSendToCpu();
+  if (mux2cpu->check_empty())
+    return INT32_MIN;
+  auto getData = mux2cpu->pop_all();
+
+  return getData[DATA];
+}
+
+void CPU::swap() {
+  int temp1 = pop();
+  int temp2 = pop();
+  push(temp1);
+  push(temp2);
+}
+
+void CPU::div() {
+  int temp1 = pop();
+  int temp2 = pop();
+  int ans = temp2 / temp1;
+  push(ans);
+}
+
+void CPU::savepc() {
+  ///??????????
+}
+
+void CPU::jmp() {
+  int top_stack = pop();
+  /// program counter
+  code_pointer = top_stack;
+}
+
+void CPU::cjmp() {
+//???????????????????
+}
+
+void CPU::inv() {
+  int temp = pop();
+  int invTemp = -temp;
+  push(invTemp);
+}
+
+void CPU::mul() {
+  int temp1 = pop();
+  int temp2 = pop();
+  int ans = temp1 * temp2;
+  push(ans);
+}
+
+void CPU::grd() {
+//????????????????????
+}
+
+void CPU::dup() {
+  int top = pop();
+  push(top);
+  push(top);
+}
+
+void CPU::over() {
+  int temp1 = pop();
+  int temp2 = pop();
+  push(temp2);
+  push(temp1);
+  push(temp2);
+}
+
+void CPU::halt() {
+//??????????????????/
+}
+
+void CPU::print() {
+  ram.print_memory();
+}
+
 void CPU::runCpu() {
   if (code_pointer < CODE_SEGMENT_MAX && stack_pointer < STACK_SEGMENT_MAX) {
 
@@ -98,39 +201,88 @@ void CPU::runCpu() {
       int Data = mux2cpu->pop();
       int Address = mux2cpu->pop();
       int Mode = mux2cpu->pop();
-//    if (Mode == WRITE) {
       /// check which instruction is
       if (prev_push) {
         std::cout << "prev_push is true\n";
         push(Data);
+        code_pointer++;
         prev_push = false;
         return;
       }
 
       switch (Data) {
-      case PUSH:std::cout << "push\n";
-        prev_push = true;
-        code_pointer = Address;
-//          cpu2dis->push_all(READ, code_pointer, Data);
-        startCPU(code_pointer);
-        break;
-      case ADD:std::cout << "add\n";
-        add();
-        break;
+        case PUSH:
+          std::cout << "push\n";
+          prev_push = true;
+          code_pointer = Address;
+          code_pointer++;
+          startCPU(code_pointer);
+          break;
+        case ADD:
+          std::cout << "add\n";
+          code_pointer++;
+          add();
+          break;
+        case DIV:
+          code_pointer++;
+          div();
+          break;
+        case MUL:
+          code_pointer++;
+          mul();
+          break;
+        case INV:
+          std::cout << "INV instruction\n";
+          code_pointer++;
+          inv();
+          break;
+        case LOAD:
+          code_pointer++;
+          load();
+          break;
+        case STORE:
+          code_pointer++;
+          store();
+          break;
+        case SAVEPC:
+          code_pointer++;
+          savepc();
+          break;
+        case JMP:
+          code_pointer++;
+          jmp();
+          break;
+        case CJMP:
+          code_pointer++;
+          cjmp();
+          break;
+        case GREAT:
+          code_pointer++;
+          grd();
+          break;
+        case DUP:
+          code_pointer++;
+          dup();
+          break;
+        case OVER:
+          code_pointer++;
+          over();
+          break;
+        case SWAP:
+          code_pointer++;
+          swap();
+          break;
+        case HALT:
+          code_pointer++;
+          halt();
+          break;
+        case PRINT:
+          code_pointer++;
+          print();
+          break;
       }
-      //      std::cerr << "runCpu write \n" << Data << "\n";
-//    }
-//    else if (Mode == READ) {
-//      std::cerr << "runCpu read \n";
-//
-//    }
-      code_pointer++;
-
     } else {
       startCPU(code_pointer);
-//      code_pointer++;
-
-//      cpu2dis->push_all(READ, code_pointer, 0);
     }
 
   }

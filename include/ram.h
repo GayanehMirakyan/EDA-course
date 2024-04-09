@@ -1,8 +1,12 @@
 #ifndef RAM_H
 #define RAM_H
+
 #include <array>
 #include <iostream>
 #include "Fifo.h"
+#include <vector>
+#include <functional>
+#include <fstream>
 
 enum ram_address {
   CODE_SEGMENT_MIN = 0,
@@ -19,16 +23,29 @@ class RAM {
 public:
   RAM(Fifo<8, int> *arb2ram,
       Fifo<8, int> *ram2demux
-      ) : arb2ram(arb2ram),
+  ) : arb2ram(arb2ram),
       ram2demux(ram2demux) {
     for (int i = 0; i < RAM_SIZE; i++) {
       memory[i] = -1;
     }
-    memory[0] = 0;
+
+    memory[0] = PUSH;
     memory[1] = 10;
-    memory[2] = 0;
+    memory[2] = PUSH;
     memory[3] = 6;
-    memory[4] = 1;
+    memory[4] = ADD;
+    memory[5] = PUSH;
+    memory[6] = 4;
+    memory[7] = ADD;
+    memory[8] = PUSH;
+    memory[9] = 4;
+    memory[10] = PUSH;
+    memory[11] = 4;
+    memory[12] = ADD;
+    memory[13] = ADD;
+    memory[14] = INV;
+
+
   }
 
   Fifo<8, int> *arb2ram;
@@ -36,13 +53,54 @@ public:
   std::array<int, RAM_SIZE> memory; // TODO initialize with 0
 
   void print_memory();
+
   void runRam();
 };
 
 void RAM::print_memory() {
-  for (auto elem : memory) {
+  for (auto elem: memory) {
     std::cerr << elem << "\n";
   }
+}
+
+
+
+void cpuLoad(std::string fileName, std::vector<Instructions>& instructionArray) {
+  std::ifstream file(fileName);
+  if (!file) {
+    std::cerr << "cpuLoad error\n";
+    return;
+  }
+
+  std::unordered_map<std::string, Instructions> instructionMap = {
+      {"PUSH", PUSH},
+      {"ADD", ADD},
+      {"DIV", DIV},
+      {"MUL", MUL},
+      {"INV", INV},
+      {"LOAD", LOAD},
+      {"STORE", STORE},
+      {"SAVEPC", SAVEPC},
+      {"JMP", JMP},
+      {"CJMP", CJMP},
+      {"GREAT", GREAT},
+      {"DUP", DUP},
+      {"OVER", OVER},
+      {"SWAP", SWAP},
+      {"HALT", HALT},
+      {"PRINT", PRINT}
+  };
+
+  std::string line;
+  while (std::getline(file, line)) {
+    if (instructionMap.find(line) != instructionMap.end()) {
+      instructionArray.push_back(instructionMap[line]);
+    } else {
+      std::cerr << "Unknown instruction: " << line << std::endl;
+    }
+  }
+
+  file.close();
 }
 
 void RAM::runRam() {
@@ -63,12 +121,11 @@ void RAM::runRam() {
       if (Address <= STACK_SEGMENT_MAX && Address >= STACK_SEGMENT_MIN) {
         ram2demux->push_all(Mode, Address, memory[Address]);
         memory[Address] = -1;
-      }
-      else if(Address <= CODE_SEGMENT_MAX && Address >= CODE_SEGMENT_MIN) {
+      } else if (Address <= CODE_SEGMENT_MAX && Address >= CODE_SEGMENT_MIN) {
         ram2demux->push_all(Mode, Address, memory[Address]);
       }
       std::cout << "after push to ram2demux\n";
-    } else{
+    } else {
       /// WRITE
       std::cout << "write to ram " << Data << "\n";
       memory[Address] = Data;

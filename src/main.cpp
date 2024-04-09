@@ -10,21 +10,6 @@
 #include <functional>
 #include <fstream>
 
-
-void cpuLoad(std::string fileName) {
-  std::ifstream file(fileName);
-  if (!file) {
-    std::cerr << "cpuLoad error\n";
-    return;
-  }
-  std::string line;
-  while (std::getline(file, line)) {
-    // push line to code segment via cpu load instruction
-  }
-
-  file.close();
-}
-
 CPU cpu(&cpu02dis0, &mux02cpu0);
 
 int main() {

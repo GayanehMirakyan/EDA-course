@@ -6,9 +6,8 @@
 #include "ram.h"
 #include "bus.h"
 
-
 class CPU {
-  public:
+public:
 
   CPU(Fifo<8, int> *cpu2dis,
       Fifo<8, int> *mux2cpu
@@ -57,13 +56,23 @@ class CPU {
 
   void print();
 
-
   void startCPU(int address);
 
+  void loadToRam(std::vector<int> instructionArray);
   Fifo<8, int> *cpu2dis;
   Fifo<8, int> *mux2cpu;
 
 };
+void CPU::loadToRam(std::vector<int> instructionArray) {
+  for (auto elem : instructionArray) {
+    cpu2dis->push_all(WRITE, code_pointer, elem);
+    bus.runSendToRam();
+    ram.runRam();
+    code_pointer++;
+  }
+  /// set code pointer
+  code_pointer = 0;
+}
 
 void CPU::startCPU(int address) {
   cpu2dis->push_all(READ, address, 0);
@@ -215,75 +224,59 @@ void CPU::runCpu() {
       }
 
       switch (Data) {
-        case PUSH:
-          std::cout << "push\n";
-          prev_push = true;
-          code_pointer = Address;
-          code_pointer++;
-          startCPU(code_pointer);
-          break;
-        case ADD:
-          std::cout << "add\n";
-          code_pointer++;
-          add();
-          break;
-        case DIV:
-          code_pointer++;
-          div();
-          break;
-        case MUL:
-          code_pointer++;
-          mul();
-          break;
-        case INV:
-          std::cout << "INV instruction\n";
-          code_pointer++;
-          inv();
-          break;
-        case LOAD:
-          code_pointer++;
-          load();
-          break;
-        case STORE:
-          code_pointer++;
-          store();
-          break;
-        case SAVEPC:
-          code_pointer++;
-          savepc();
-          break;
-        case JMP:
-          code_pointer++;
-          jmp();
-          break;
-        case CJMP:
-          code_pointer++;
-          cjmp();
-          break;
-        case GREAT:
-          code_pointer++;
-          grd();
-          break;
-        case DUP:
-          code_pointer++;
-          dup();
-          break;
-        case OVER:
-          code_pointer++;
-          over();
-          break;
-        case SWAP:
-          code_pointer++;
-          swap();
-          break;
-        case HALT:
-          code_pointer++;
-          halt();
-          break;
-        case PRINT:
-          code_pointer++;
-          print();
-          break;
+      case PUSH:std::cout << "push\n";
+        prev_push = true;
+        code_pointer = Address;
+        code_pointer++;
+        startCPU(code_pointer);
+        break;
+      case ADD:std::cout << "add\n";
+        code_pointer++;
+        add();
+        break;
+      case DIV:code_pointer++;
+        div();
+        break;
+      case MUL:code_pointer++;
+        mul();
+        break;
+      case INV:std::cout << "INV instruction\n";
+        code_pointer++;
+        inv();
+        break;
+      case LOAD:code_pointer++;
+        load();
+        break;
+      case STORE:code_pointer++;
+        store();
+        break;
+      case SAVEPC:code_pointer++;
+        savepc();
+        break;
+      case JMP:code_pointer++;
+        jmp();
+        break;
+      case CJMP:code_pointer++;
+        cjmp();
+        break;
+      case GREAT:code_pointer++;
+        grd();
+        break;
+      case DUP:code_pointer++;
+        dup();
+        break;
+      case OVER:code_pointer++;
+        over();
+        break;
+      case SWAP:code_pointer++;
+        swap();
+        break;
+      case HALT:code_pointer++;
+        halt();
+        break;
+      case PRINT:code_pointer++;
+        print();
+        break;
       }
     } else {
       startCPU(code_pointer);

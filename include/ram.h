@@ -28,24 +28,6 @@ public:
     for (int i = 0; i < RAM_SIZE; i++) {
       memory[i] = -1;
     }
-
-    memory[0] = PUSH;
-    memory[1] = 10;
-    memory[2] = PUSH;
-    memory[3] = 6;
-    memory[4] = ADD;
-    memory[5] = PUSH;
-    memory[6] = 4;
-    memory[7] = ADD;
-    memory[8] = PUSH;
-    memory[9] = 4;
-    memory[10] = PUSH;
-    memory[11] = 4;
-    memory[12] = ADD;
-    memory[13] = ADD;
-    memory[14] = INV;
-
-
   }
 
   Fifo<8, int> *arb2ram;

@@ -19,7 +19,7 @@ void loadFile(std::string fileName, std::vector<int>& instructionArray) {
     return;
   }
 
-  std::unordered_map<std::string, Instructions> instructionMap = {
+  std::unordered_map<std::string, int> instructionMap = {
       {"PUSH", PUSH},
       {"ADD", ADD},
       {"DIV", DIV},
@@ -40,28 +40,35 @@ void loadFile(std::string fileName, std::vector<int>& instructionArray) {
 
   std::string line;
   while (std::getline(file, line)) {
-    std::istringstream iss(line);
-    std::string instruction;
-    int number;
-    iss >> instruction;
-    if (instructionMap.find(instruction) != instructionMap.end()) {
-      instructionArray.push_back(instructionMap[instruction]);
-      if (iss >> number) {
-        instructionArray.push_back(number);
-      }
+    if (instructionMap.find(line) != instructionMap.end()) {
+      instructionArray.push_back(instructionMap[line]);
     } else {
-      std::cerr << "Unknown instruction: " << instruction << std::endl;
+      std::istringstream iss(line);
+      int num;
+      iss >> num;
+      if(iss.eof() && !iss.fail()) {
+        instructionArray.push_back(num);
+
+      } else {
+        std::cerr << "Unknown instruction: " << line << std::endl;
+      }
     }
   }
 
   file.close();
 }
 int main(int argc, char* argv[]) {
-//  ram.print_memory();
   if (argc != 2) {
     std::cerr << "Usage: " << argv[0] << " <filename>\n";
     return 1;
   }
+
+  std::vector<int> instructionArray;
+  loadFile(argv[1], instructionArray);
+
+  /// need to write data from file to ram
+  cpu.loadToRam(instructionArray);
+  ram.print_memory();
 
   std::vector<std::function<void()>> tasks =
           {[&] { cpu.runCpu(); },

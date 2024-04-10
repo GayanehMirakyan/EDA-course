@@ -8,7 +8,7 @@
 
 
 class CPU {
-public:
+  public:
 
   CPU(Fifo<8, int> *cpu2dis,
       Fifo<8, int> *mux2cpu
@@ -151,7 +151,11 @@ void CPU::jmp() {
 }
 
 void CPU::cjmp() {
-//???????????????????
+  int cond = pop();
+  int addr = pop();
+  if (cond) {
+    code_pointer = addr;
+  }
 }
 
 void CPU::inv() {

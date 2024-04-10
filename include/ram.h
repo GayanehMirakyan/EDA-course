@@ -64,45 +64,6 @@ void RAM::print_memory() {
 }
 
 
-
-void cpuLoad(std::string fileName, std::vector<Instructions>& instructionArray) {
-  std::ifstream file(fileName);
-  if (!file) {
-    std::cerr << "cpuLoad error\n";
-    return;
-  }
-
-  std::unordered_map<std::string, Instructions> instructionMap = {
-      {"PUSH", PUSH},
-      {"ADD", ADD},
-      {"DIV", DIV},
-      {"MUL", MUL},
-      {"INV", INV},
-      {"LOAD", LOAD},
-      {"STORE", STORE},
-      {"SAVEPC", SAVEPC},
-      {"JMP", JMP},
-      {"CJMP", CJMP},
-      {"GREAT", GREAT},
-      {"DUP", DUP},
-      {"OVER", OVER},
-      {"SWAP", SWAP},
-      {"HALT", HALT},
-      {"PRINT", PRINT}
-  };
-
-  std::string line;
-  while (std::getline(file, line)) {
-    if (instructionMap.find(line) != instructionMap.end()) {
-      instructionArray.push_back(instructionMap[line]);
-    } else {
-      std::cerr << "Unknown instruction: " << line << std::endl;
-    }
-  }
-
-  file.close();
-}
-
 void RAM::runRam() {
 
   if (!arb2ram->check_empty()) {

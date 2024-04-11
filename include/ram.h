@@ -20,19 +20,19 @@ enum ram_address {
 #define RAM_SIZE ram_address::DATA_SEGMENT_MAX
 
 class RAM {
-public:
+  public:
   RAM(Fifo<8, int> *arb2ram,
       Fifo<8, int> *ram2demux
   ) : arb2ram(arb2ram),
       ram2demux(ram2demux) {
     for (int i = 0; i < RAM_SIZE; i++) {
-      memory[i] = -1;
+      memory[i] = INT16_MIN;
     }
   }
 
   Fifo<8, int> *arb2ram;
   Fifo<8, int> *ram2demux;
-  std::array<int, RAM_SIZE> memory; // TODO initialize with 0
+  std::array<int, RAM_SIZE> memory;
 
   void print_memory();
 
@@ -40,9 +40,11 @@ public:
 };
 
 void RAM::print_memory() {
-  for (auto elem: memory) {
-    std::cerr << elem << "\n";
+  for (int st = STACK_SEGMENT_MIN; st <= STACK_SEGMENT_MAX; st++) {
+    std::cerr << memory[st] << " ";
   }
+  std::cerr << "\n";
+
 }
 
 
@@ -50,33 +52,30 @@ void RAM::runRam() {
 
   if (!arb2ram->check_empty()) {
 
-    std::cout << " RAM \n";
     auto from_fifo = arb2ram->pop_all();;
     int Mode = from_fifo[MODE];
     int Address = from_fifo[ADDRESS];
     int Data = from_fifo[DATA];
-    std::cout << " arb to ram fifo \n";
-    std::cerr << "Mode = " << Mode << "   Address = " << Address << "   Data = " << Data << "\n";
 
     if (Mode == READ) {
       /// ram to demux
-//      std::cout << memory[Address] << "\n" << ram2demux->check_empty() << "\n";
       if (Address <= STACK_SEGMENT_MAX && Address >= STACK_SEGMENT_MIN) {
         ram2demux->push_all(Mode, Address, memory[Address]);
         memory[Address] = -1;
       } else if (Address <= CODE_SEGMENT_MAX && Address >= CODE_SEGMENT_MIN) {
         ram2demux->push_all(Mode, Address, memory[Address]);
+      } else if (Address <= DATA_SEGMENT_MAX && Address >= DATA_SEGMENT_MIN) {
+        ram2demux->push_all(Mode, Address, memory[Address]);
+
       }
-      std::cout << "after push to ram2demux\n";
     } else {
       /// WRITE
-      std::cout << "write to ram " << Data << "\n";
       memory[Address] = Data;
 
     }
   }
 }
 
-RAM ram(&arb02ram0, &ram02demux0); // FIXME : arb02ram0 --> arb02ram
+RAM ram(&arb02ram, &ram02demux0);
 
 #endif //RAM_H

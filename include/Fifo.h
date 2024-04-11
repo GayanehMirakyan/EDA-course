@@ -5,22 +5,22 @@
 #include <iostream>
 
 enum Instructions {
-    PUSH,
-    ADD,
-    DIV,
-    MUL,
-    INV,
-    LOAD,
-    STORE,
-    SAVEPC,
-    JMP,
-    CJMP,
-    GREAT,
-    DUP,
-    OVER,
-    SWAP,
-    HALT,
-    PRINT
+  PUSH,
+  ADD,
+  DIV,
+  MUL,
+  INV,
+  LOAD,
+  STORE,
+  SAVEPC,
+  JMP,
+  CJMP,
+  GREAT,
+  DUP,
+  OVER,
+  SWAP,
+  HALT,
+  PRINT
 };
 
 enum {
@@ -43,10 +43,8 @@ enum address { // TODO ram and vga are different classes
 
 template<int depth, class data_width>
 class Fifo {
-public:
+  public:
   Fifo();
-
-//  void step(bool reset, bool write, bool read, data_width data_in = 0);
 
   bool check_empty();
 
@@ -59,12 +57,14 @@ public:
   data_width get_data_out() const;
 
   void push(data_width data);
+
   void push_all(data_width mode, data_width address, data_width data);
+
   std::array<data_width, 3> pop_all();
 
   data_width pop();
 
-//private:
+  private:
   std::array<data_width, 3> fifo;
   int write_ptr;
   int read_ptr;
@@ -115,7 +115,7 @@ void Fifo<depth, data_width>::push(data_width data) {
     fifo[count] = data;
 
     count++;
-    std::cout << "Pushed " << data << std::endl;
+//    std::cout << "Pushed " << data << std::endl;
   }
 }
 
@@ -129,14 +129,14 @@ data_width Fifo<depth, data_width>::pop() {
   /// [mode, address, data]
   data_width data = fifo[count - 1];
   count--;
-  std::cout << "-------------------------------Poped " << data << std::endl;
+//  std::cout << "-------------------------------Poped " << data << std::endl;
   return data;
 }
 
 Fifo<8, int> cpu02dis0;
 Fifo<8, int> mux02cpu0;
 Fifo<8, int> ram02demux0;
-Fifo<8, int> arb02ram0;
+Fifo<8, int> arb02ram;
 
 
 Fifo<8, int> demux12mux0;

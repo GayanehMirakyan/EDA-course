@@ -1,10 +1,7 @@
 #include "mux.h"
 #include "dispatcher.h"
-#include "arbiter.h"
 #include "demux.h"
 #include "cpu.h"
-#include "bus.h"
-#include "ram.h"
 #include <iostream>
 #include <vector>
 #include <functional>
@@ -12,30 +9,31 @@
 #include <sstream>
 
 CPU cpu(&cpu02dis0, &mux02cpu0);
-void loadFile(std::string fileName, std::vector<int>& instructionArray) {
+
+void loadFile(std::string fileName, std::vector<int> &instructionArray) {
   std::ifstream file(fileName);
   if (!file) {
-    std::cerr << "cpuLoad error\n";
+    std::cerr << "File loading error\n";
     return;
   }
 
   std::unordered_map<std::string, int> instructionMap = {
-      {"PUSH", PUSH},
-      {"ADD", ADD},
-      {"DIV", DIV},
-      {"MUL", MUL},
-      {"INV", INV},
-      {"LOAD", LOAD},
-      {"STORE", STORE},
+      {"PUSH",   PUSH},
+      {"ADD",    ADD},
+      {"DIV",    DIV},
+      {"MUL",    MUL},
+      {"INV",    INV},
+      {"LOAD",   LOAD},
+      {"STORE",  STORE},
       {"SAVEPC", SAVEPC},
-      {"JMP", JMP},
-      {"CJMP", CJMP},
-      {"GREAT", GREAT},
-      {"DUP", DUP},
-      {"OVER", OVER},
-      {"SWAP", SWAP},
-      {"HALT", HALT},
-      {"PRINT", PRINT}
+      {"JMP",    JMP},
+      {"CJMP",   CJMP},
+      {"GREAT",  GREAT},
+      {"DUP",    DUP},
+      {"OVER",   OVER},
+      {"SWAP",   SWAP},
+      {"HALT",   HALT},
+      {"PRINT",  PRINT}
   };
 
   std::string line;
@@ -46,7 +44,7 @@ void loadFile(std::string fileName, std::vector<int>& instructionArray) {
       std::istringstream iss(line);
       int num;
       iss >> num;
-      if(iss.eof() && !iss.fail()) {
+      if (iss.eof() && !iss.fail()) {
         instructionArray.push_back(num);
 
       } else {
@@ -57,7 +55,8 @@ void loadFile(std::string fileName, std::vector<int>& instructionArray) {
 
   file.close();
 }
-int main(int argc, char* argv[]) {
+
+int main(int argc, char *argv[]) {
   if (argc != 2) {
     std::cerr << "Usage: " << argv[0] << " <filename>\n";
     return 1;
@@ -68,29 +67,22 @@ int main(int argc, char* argv[]) {
 
   /// need to write data from file to ram
   cpu.loadToRam(instructionArray);
-  ram.print_memory();
 
   std::vector<std::function<void()>> tasks =
-          {[&] { cpu.runCpu(); },
-           [&] { bus.runSendToRam(); }, [&] { ram.runRam(); }, [&] { bus.runSendToCpu(); }};
-  int i = 0;
+      {[&] { cpu.runCpu(); },
+       [&] { bus.runSendToRam(); }, [&] { ram.runRam(); }, [&] { bus.runSendToCpu(); }};
   while (true) {
-//    for (auto &task: tasks) {
-//      task();
-//    }
-
-/// for debug
-    cpu.runCpu();
-    bus.runSendToRam();
-    ram.runRam();
-    bus.runSendToCpu();
-
-    i++;
-    if (i > 100) {
+    for (auto &task: tasks) {
+      task();
+    }
+    if (cpu.off) {
       break;
     }
-
+/// for debug
+//    cpu.runCpu();
+//    bus.runSendToRam();
+//    ram.runRam();
+//    bus.runSendToCpu();
   }
-  ram.print_memory();
   return 0;
 }

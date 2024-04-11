@@ -32,7 +32,6 @@ void ARBITER<data_width>::runArbiter() {
 
     if (Mode == WRITE) {
       /// send data to ram
-
       arb2ram->push_all(Mode, Address, Data);
     } else if (Mode == READ) {
       /// read

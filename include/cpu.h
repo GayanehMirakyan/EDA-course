@@ -11,9 +11,7 @@ class CPU {
 
   CPU(Fifo<8, int> *cpu2dis,
       Fifo<8, int> *mux2cpu
-  ) : cpu2dis(cpu2dis), mux2cpu(mux2cpu), prev_push(false), off(false) {
-    // TODO change
-  }
+  ) : cpu2dis(cpu2dis), mux2cpu(mux2cpu), prev_push(false), off(false) {}
 
   int code_pointer = CODE_SEGMENT_MIN;
   int stack_pointer = STACK_SEGMENT_MIN;
@@ -87,7 +85,6 @@ void CPU::push(int Data) {
   bus.runSendToRam();
   ram.runRam();
   stack_pointer++;
-//  code_pointer++;
 }
 
 int CPU::pop() {

@@ -8,7 +8,7 @@
 
 template<class data_width>
 class DISPATCHER {
-  public:
+public:
 
   DISPATCHER(Fifo<8, data_width> *cpu2dis,
              Fifo<8, data_width> *dis2arb0,

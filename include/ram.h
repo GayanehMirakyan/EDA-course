@@ -20,7 +20,7 @@ enum ram_address {
 #define RAM_SIZE ram_address::DATA_SEGMENT_MAX
 
 class RAM {
-  public:
+public:
   RAM(Fifo<8, int> *arb2ram,
       Fifo<8, int> *ram2demux
   ) : arb2ram(arb2ram),
@@ -46,7 +46,6 @@ void RAM::print_memory() {
   std::cerr << "\n";
 
 }
-
 
 void RAM::runRam() {
 

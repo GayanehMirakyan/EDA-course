@@ -43,7 +43,7 @@ enum address { // TODO ram and vga are different classes
 
 template<int depth, class data_width>
 class Fifo {
-  public:
+public:
   Fifo();
 
   bool check_empty();
@@ -64,7 +64,7 @@ class Fifo {
 
   data_width pop();
 
-  private:
+private:
   std::array<data_width, 3> fifo;
   int write_ptr;
   int read_ptr;
@@ -101,9 +101,9 @@ void Fifo<depth, data_width>::push_all(data_width mode, data_width address, data
 
 template<int depth, class data_width>
 std::array<data_width, 3> Fifo<depth, data_width>::pop_all() {
-  data_width Data = this->pop();
-  data_width Address = this->pop();
   data_width Mode = this->pop();
+  data_width Address = this->pop();
+  data_width Data = this->pop();
   return {Mode, Address, Data};
 }
 
@@ -115,7 +115,6 @@ void Fifo<depth, data_width>::push(data_width data) {
     fifo[count] = data;
 
     count++;
-//    std::cout << "Pushed " << data << std::endl;
   }
 }
 
@@ -126,10 +125,15 @@ data_width Fifo<depth, data_width>::pop() {
     std::cout << "---Cannot Pop: Buffer Empty---" << std::endl;
     return defArr;
   }
+  data_width data = fifo[0];
+  for (int i = 0; i < fifo.size() - 1; i++) {
+    fifo[i] = fifo[i + 1];
+  }
+
+
   /// [mode, address, data]
-  data_width data = fifo[count - 1];
+//  data_width data = fifo[count - 1];
   count--;
-//  std::cout << "-------------------------------Poped " << data << std::endl;
   return data;
 }
 
@@ -137,7 +141,6 @@ Fifo<8, int> cpu02dis0;
 Fifo<8, int> mux02cpu0;
 Fifo<8, int> ram02demux0;
 Fifo<8, int> arb02ram;
-
 
 Fifo<8, int> demux12mux0;
 Fifo<8, int> demux12mux1;

@@ -6,7 +6,7 @@
 
 template<class data_width>
 class ARBITER {
-  public:
+public:
   ARBITER(Fifo<8, int> *dis02arb,
           Fifo<8, int> *dis12arb,
           Fifo<8, int> *arb2demux,
@@ -51,7 +51,6 @@ void ARBITER<data_width>::runArbiter() {
     if (Mode == WRITE) {
       /// send data to ram
       arb2ram->push_all(Mode, Address, Data);
-
 
     } else if (Mode == READ) {
       /// for demux selector

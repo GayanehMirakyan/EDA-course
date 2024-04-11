@@ -18,22 +18,22 @@ void loadFile(std::string fileName, std::vector<int> &instructionArray) {
   }
 
   std::unordered_map<std::string, int> instructionMap = {
-      {"PUSH",   PUSH},
-      {"ADD",    ADD},
-      {"DIV",    DIV},
-      {"MUL",    MUL},
-      {"INV",    INV},
-      {"LOAD",   LOAD},
-      {"STORE",  STORE},
+      {"PUSH", PUSH},
+      {"ADD", ADD},
+      {"DIV", DIV},
+      {"MUL", MUL},
+      {"INV", INV},
+      {"LOAD", LOAD},
+      {"STORE", STORE},
       {"SAVEPC", SAVEPC},
-      {"JMP",    JMP},
-      {"CJMP",   CJMP},
-      {"GREAT",  GREAT},
-      {"DUP",    DUP},
-      {"OVER",   OVER},
-      {"SWAP",   SWAP},
-      {"HALT",   HALT},
-      {"PRINT",  PRINT}
+      {"JMP", JMP},
+      {"CJMP", CJMP},
+      {"GREAT", GREAT},
+      {"DUP", DUP},
+      {"OVER", OVER},
+      {"SWAP", SWAP},
+      {"HALT", HALT},
+      {"PRINT", PRINT}
   };
 
   std::string line;
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
       {[&] { cpu.runCpu(); },
        [&] { bus.runSendToRam(); }, [&] { ram.runRam(); }, [&] { bus.runSendToCpu(); }};
   while (true) {
-    for (auto &task: tasks) {
+    for (auto &task : tasks) {
       task();
     }
     if (cpu.off) {

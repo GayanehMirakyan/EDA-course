@@ -7,7 +7,7 @@
 #include "bus.h"
 
 class CPU {
-  public:
+public:
 
   CPU(Fifo<8, int> *cpu2dis,
       Fifo<8, int> *mux2cpu
@@ -65,7 +65,7 @@ class CPU {
 };
 
 void CPU::loadToRam(std::vector<int> instructionArray) {
-  for (auto elem: instructionArray) {
+  for (auto elem : instructionArray) {
     cpu2dis->push_all(WRITE, code_pointer, elem);
     bus.runSendToRam();
     ram.runRam();
@@ -111,10 +111,8 @@ void CPU::add() {
 }
 
 void CPU::store() {
-  /// idk
   int address = pop();
   int data = pop();
-//  push(temp);
   data_pointer = address;
   data_pointer++;
   cpu2dis->push_all(WRITE, address, data);
@@ -152,13 +150,11 @@ void CPU::div() {
 }
 
 void CPU::savepc() {
-  ///??????????
   push(code_pointer);
 }
 
 void CPU::jmp() {
   int top_stack = pop();
-  /// program counter
   code_pointer = top_stack;
 }
 
@@ -187,7 +183,6 @@ void CPU::mul() {
 }
 
 void CPU::grd() {
-//????????????????????
   int temp1 = pop();
   int temp2 = pop();
   push(temp1 > temp2);
@@ -221,9 +216,9 @@ void CPU::runCpu() {
   if (code_pointer < CODE_SEGMENT_MAX && stack_pointer < STACK_SEGMENT_MAX) {
 
     if (!mux2cpu->check_empty()) {
-      int Data = mux2cpu->pop();
-      int Address = mux2cpu->pop();
-      int Mode = mux2cpu->pop();
+      auto from_fifo = mux2cpu->pop_all();;
+      int Data = from_fifo[DATA];
+
       /// check which instruction is
       if (prev_push) {
         push(Data);
@@ -233,71 +228,53 @@ void CPU::runCpu() {
       }
 
       switch (Data) {
-        case PUSH:
-          prev_push = true;
-//          code_pointer = Address;
-          code_pointer++;
-          startCPU(code_pointer);
-          break;
-        case ADD:
-          add();
-          code_pointer++;
-          break;
-        case DIV:
-          div();
-          code_pointer++;
-          break;
-        case MUL:
-          mul();
-          code_pointer++;
-          break;
-        case INV:
-          inv();
-          code_pointer++;
-          break;
-        case LOAD:
-          load();
-          code_pointer++;
-          break;
-        case STORE:
-          store();
-          code_pointer++;
-          break;
-        case SAVEPC:
-          savepc();
-          code_pointer++;
-          break;
-        case JMP:
-          jmp();
-          code_pointer++;
-          break;
-        case CJMP:
-          cjmp();
-//          code_pointer++;
-          break;
-        case GREAT:
-          grd();
-          code_pointer++;
-          break;
-        case DUP:
-          dup();
-          code_pointer++;
-          break;
-        case OVER:
-          over();
-          code_pointer++;
-          break;
-        case SWAP:
-          swap();
-          code_pointer++;
-          break;
-        case HALT:
-          halt();
-          break;
-        case PRINT:
-          print();
-          code_pointer++;
-          break;
+      case PUSH:prev_push = true;
+        code_pointer++;
+        startCPU(code_pointer);
+        break;
+      case ADD:add();
+        code_pointer++;
+        break;
+      case DIV:div();
+        code_pointer++;
+        break;
+      case MUL:mul();
+        code_pointer++;
+        break;
+      case INV:inv();
+        code_pointer++;
+        break;
+      case LOAD:load();
+        code_pointer++;
+        break;
+      case STORE:store();
+        code_pointer++;
+        break;
+      case SAVEPC:savepc();
+        code_pointer++;
+        break;
+      case JMP:jmp();
+        code_pointer++;
+        break;
+      case CJMP:cjmp();
+        break;
+      case GREAT:grd();
+        code_pointer++;
+        break;
+      case DUP:dup();
+        code_pointer++;
+        break;
+      case OVER:over();
+        code_pointer++;
+        break;
+      case SWAP:swap();
+        code_pointer++;
+        break;
+      case HALT:halt();
+        break;
+      case PRINT:print();
+        code_pointer++;
+        break;
       }
     } else {
       startCPU(code_pointer);
